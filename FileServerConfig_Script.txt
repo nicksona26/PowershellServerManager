@@ -1,0 +1,15 @@
+# To configure a file server and join it to domain
+
+#configure networking
+New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress "192.168.1.101" -PrefixLength 24 -DefaultGateway "192.168.1.1"
+Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses "192.168.1.100","8.8.8.8"
+
+#configure firewall rules
+New-NetFirewallRule -DisplayName "Allow ICMPv4" -Direction Inbound -Action Allow -Protocol icmpv4
+New-NetFirewallRule -DisplayName "Allow ICMPv6" -Direction Inbound -Action Allow -Protocol icmpv6
+
+#install ADDS
+Install-WindowsFeature FS-FileServer
+
+#join the domain
+Add-Computer -DomainName nuggetlab.com -NewName "FS-NUG" -Restart
